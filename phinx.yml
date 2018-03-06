@@ -1,0 +1,21 @@
+paths:
+    migrations: 
+        - '%%PHINX_CONFIG_DIR%%/db/migrations'
+    seeds:
+        - '%%PHINX_CONFIG_DIR%%/db/seeds'
+
+environment: testing
+
+environments:
+    default_migration_table: migrations
+    default_database: testing
+    testing:
+        adapter: mysql
+        host: localhost
+        name: testing
+        user: test
+        pass: test
+        port: 3306
+        charset: utf8
+
+version_order: creation

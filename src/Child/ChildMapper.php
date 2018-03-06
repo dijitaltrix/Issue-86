@@ -13,5 +13,6 @@ class ChildMapper extends AbstractMapper
      */
     protected function setRelated()
     {
+        // $this->manyToOne('parent', \Test\Parent\ParentMapper::CLASS);
     }
 }

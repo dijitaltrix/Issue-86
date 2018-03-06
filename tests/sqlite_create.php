@@ -43,7 +43,6 @@ $transaction = $atlas->newTransaction();
 // create parent from data, stripping out related child ['children'] from $data
 $parent = $atlas->newRecord(ParentMapper::class, array_diff_key($data, ['children'=>0]));
 
-$result = $atlas->persist($parent);
 // create parent items as record set
 $parent->children = $atlas->newRecordSet(ChildMapper::class);
 

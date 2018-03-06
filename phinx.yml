@@ -6,9 +6,25 @@ paths:
 
 environments:
     default_migration_table: migrations
-    default_database: test
-    test:
+    default_database: mysql_vbox
+    sqlite:
         adapter: sqlite
         name: db/test.sqlite
+    mysql:
+        adapter: mysql
+        host: localhost
+        name: testing
+        user: test
+        pass: test
+        port: 3306
+        charset: utf8    
+    mysql_vbox:
+        adapter: mysql
+        host: 10.0.1.7
+        name: testing
+        user: test
+        pass: test
+        port: 3306
+        charset: utf8    
 
 version_order: creation

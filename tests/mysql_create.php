@@ -32,6 +32,12 @@ $con = new AtlasContainer(new \PDO(
     'test'
 ));
 
+// $con = new AtlasContainer(new \PDO(
+//     'mysql:host=10.0.1.7;dbname=testing',
+//     'test',
+//     'test'
+// ));
+
 $con->setMappers([
     ParentMapper::class,
     ChildMapper::class,

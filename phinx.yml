@@ -4,18 +4,11 @@ paths:
     seeds:
         - '%%PHINX_CONFIG_DIR%%/db/seeds'
 
-environment: testing
-
 environments:
     default_migration_table: migrations
-    default_database: testing
-    testing:
-        adapter: mysql
-        host: localhost
-        name: testing
-        user: test
-        pass: test
-        port: 3306
-        charset: utf8
+    default_database: test
+    test:
+        adapter: sqlite
+        name: db/test.sqlite
 
 version_order: creation

@@ -13,8 +13,9 @@ class ParentMapper extends AbstractMapper
      */
     protected function setRelated()
     {
-        $this->oneToMany('children', \Test\Child\ChildMapper::class)->on([
-            'id' => 'parent_id'
-        ]);
+        $this->oneToMany('children', \Test\Child\ChildMapper::class)
+            ->on([
+                'id' => 'parent_id'
+            ]);
     }
 }

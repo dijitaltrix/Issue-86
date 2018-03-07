@@ -13,8 +13,8 @@ class ChildMapperEvents extends MapperEvents
 {
     public function beforeInsert(MapperInterface $mapper, RecordInterface $record)
     {
-        if ($record->quantity == 1) {
-            throw new Exception("Some error");
+        if ($record->quantity == 99) {
+            throw new Exception("Exception thrown in ChildMapperEvents::beforeInsert");
         }
     }
 }

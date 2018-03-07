@@ -5,23 +5,69 @@ use Atlas\Orm\AtlasContainer;
 use Test\Parent\ParentMapper;
 use Test\Child\ChildMapper;
 
-
-$data =[
-    'customer_id' => 101,
-    'date' => time(),
-    'reference' => 'abcde',
-    'children' => [
-        [
-            'parent_id' => null,
-            'description' => 'Test child item',
-            'price' => 10.99,
-            'quantity' => 2
+$datas = [
+    [
+        'customer_id' => 101,
+        'date' => date('Y-m-d'),
+        'reference' => 'abcde',
+        'children' => [
+            [
+                'parent_id' => null,
+                'description' => 'A child item',
+                'price' => 10.99,
+                'quantity' => 2
+            ],
+            [
+                'parent_id' => null,
+                'description' => 'Another child item',
+                'price' => 14.99,
+                'quantity' => 1
+            ],
         ],
-        [
-            'parent_id' => null,
-            'description' => 'Another item',
-            'price' => 14.99,
-            'quantity' => 1
+    ],
+    [
+        'customer_id' => 202,
+        'date' => date('Y-m-d'),
+        'reference' => 'xyz123',
+        'children' => [
+            [
+                'parent_id' => null,
+                'description' => 'A child item',
+                'price' => 9.99,
+                'quantity' => 1
+            ],
+            [
+                'parent_id' => null,
+                'description' => 'Another child item',
+                'price' => 19.99,
+                'quantity' => 1
+            ],
+            [
+                'parent_id' => null,
+                'description' => 'A futher child item',
+                'price' => 2.99,
+                'quantity' => 1
+            ],
+        ],
+    ],
+    [
+        'customer_id' => 303,
+        'date' => date('Y-m-d'),
+        'reference' => 'abc123',
+        'children' => [
+            [
+                'parent_id' => null,
+                'description' => 'A child item',
+                'price' => 4.99,
+                'quantity' => 99 // this will throw an Exception in src/Child/ChildMapperEvents.php 
+                                 // the parent 'reference:abc123' should not be created
+            ],
+            [
+                'parent_id' => null,
+                'description' => 'Another child item',
+                'price' => 19.99,
+                'quantity' => 1
+            ],
         ],
     ],
 ];
@@ -45,39 +91,41 @@ $con->setMappers([
 
 $atlas = $con->getAtlas();
 
-// begin transaction
-$transaction = $atlas->newTransaction();
+foreach ($datas as $data)
+{
+    // begin transaction
+    $transaction = $atlas->newTransaction();
 
-// create parent from data, stripping out related child ['children'] from $data
-$parent = $atlas->newRecord(ParentMapper::class, array_diff_key($data, ['children'=>0]));
+    // create parent from data, stripping out related child ['children'] from $data
+    $parent = $atlas->newRecord(ParentMapper::class, array_diff_key($data, ['children'=>0]));
 
-// create parent items as record set
-$parent->children = $atlas->newRecordSet(ChildMapper::class);
+    // create parent items as record set
+    $parent->children = $atlas->newRecordSet(ChildMapper::class);
 
-// append item children from $data['children'] to $parent->children
-foreach ($data['children'] as $child) {
-    $parent->children[] = $atlas->newRecord(ChildMapper::class, $child);
-}
+    // append item children from $data['children'] to $parent->children
+    foreach ($data['children'] as $child) {
+        $parent->children[] = $atlas->newRecord(ChildMapper::class, $child);
+    }
 
-// store parent and items
-$transaction->persist($parent);
+    // store parent and items
+    $transaction->persist($parent);
 
-$result = $transaction->exec();
+    if ($transaction->exec()) {
 
-if ($result) {
+        echo "\nCreated record $parent->id ok\n";
 
-    echo "\nCreated record $parent->id ok\n";
+    } else {
 
-} else {
+        // get the exception that was thrown in the transaction
+        $e = $transaction->getException();
 
-    // get the exception that was thrown in the transaction
-    $e = $transaction->getException();
+        // get the work element that threw the exception
+        $work = $transaction->getFailure();
 
-    // get the work element that threw the exception
-    $work = $transaction->getFailure();
-
-    // some output
-    echo "The Transaction failed:\n";
-    echo $work->getLabel() . ' threw exception ' . $e->getMessage();
+        // some output
+        echo "The Transaction failed:\n";
+        echo $work->getLabel() . ' threw exception ' . $e->getMessage();
     
+    }
 }
+

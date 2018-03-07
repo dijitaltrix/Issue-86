@@ -6,7 +6,7 @@ paths:
 
 environments:
     default_migration_table: migrations
-    default_database: mysql
+    default_database: sqlite
     sqlite:
         adapter: sqlite
         name: db/test.sqlite

@@ -8,81 +8,73 @@ use Test\Child\ChildMapper;
 $datas = [
     [
         'customer_id' => 101,
-        'date' => date('Y-m-d'),
-        'reference' => 'abcde',
+        'date' => time(),
+        'reference' => 'abcdef',
         'children' => [
             [
                 'parent_id' => null,
                 'description' => 'A child item',
                 'price' => 10.99,
-                'quantity' => 2
+                'quantity' => 1
             ],
             [
                 'parent_id' => null,
                 'description' => 'Another child item',
                 'price' => 14.99,
-                'quantity' => 1
+                'quantity' => 99 // this will throw an Exception in src/Child/ChildMapperEvents.php 
+                                 // the parent reference:abcdef is not created
             ],
         ],
     ],
     [
         'customer_id' => 202,
-        'date' => date('Y-m-d'),
+        'date' => time(),
         'reference' => 'xyz123',
         'children' => [
             [
                 'parent_id' => null,
                 'description' => 'A child item',
                 'price' => 9.99,
-                'quantity' => 1
+                'quantity' => 2
             ],
             [
                 'parent_id' => null,
                 'description' => 'Another child item',
                 'price' => 19.99,
-                'quantity' => 1
+                'quantity' => 2
             ],
             [
                 'parent_id' => null,
                 'description' => 'A futher child item',
                 'price' => 2.99,
-                'quantity' => 1
+                'quantity' => 2
             ],
         ],
     ],
     [
         'customer_id' => 303,
-        'date' => date('Y-m-d'),
+        'date' => time(),
         'reference' => 'abc123',
         'children' => [
             [
                 'parent_id' => null,
                 'description' => 'A child item',
                 'price' => 4.99,
-                'quantity' => 99 // this will throw an Exception in src/Child/ChildMapperEvents.php 
-                                 // the parent 'reference:abc123' should not be created
+                'quantity' => 3
             ],
             [
                 'parent_id' => null,
                 'description' => 'Another child item',
                 'price' => 19.99,
-                'quantity' => 1
+                'quantity' => 3
             ],
         ],
     ],
 ];
 
 $con = new AtlasContainer(new \PDO(
-    'mysql:host=localhost;dbname=testing',
-    'test',
-    'test'
+    'sqlite:db/test.sqlite'
 ));
-
-// $con = new AtlasContainer(new \PDO(
-//     'mysql:host=10.0.1.7;dbname=testing',
-//     'test',
-//     'test'
-// ));
 
 $con->setMappers([
     ParentMapper::class,
@@ -129,3 +121,9 @@ foreach ($datas as $data)
     }
 }
 
+$rs = $atlas
+    ->select(ParentMapper::CLASS)
+    ->orderBy(['id'])
+    ->fetchRecords();
+
+print_r($rs);
